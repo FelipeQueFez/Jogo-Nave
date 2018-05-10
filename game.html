@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+	<meta charset="utf-8" />
+	<title> Game Loop usando requestAnimationFrame</title>
+</head>
+
+<body>
+	<canvas id="minha-tela" width="800" height="400" style="border: #F00 solid 1px;"> </canvas>
+	<h3>Pontos: </h3>
+	<h3 id="pontos">0</h3>
+	<script>  
+		var pontos = 0;
+
+		var canvas = document.getElementById('minha-tela');
+		var ctx = canvas.getContext('2d');
+
+		//definir o ínicio do desenho
+		var xMeteoro = getRandomNumeroRange(0, 800);
+		var yMeteoro = 0;
+		var larguraMeteoro = 30;
+		var alturaMeteoro = 30;
+
+		var xIteracao = 400;
+		var yIteracao = 350;
+		var larguraIteracao = 50;
+		var alturaIteracao = 50;
+
+		//a função gameloop é chamada aqui
+		requestAnimationFrame(gameloop);
+
+		window.onkeydown = pressionaTecla;
+		function pressionaTecla(tecla) {
+			if (tecla.keyCode == 38) {
+				yIteracao = yIteracao - 70; //diminuir y tem o efeito de subida
+			}
+			if (tecla.keyCode == 40) {
+				yIteracao = yIteracao + 70; //aumentar y tem o efeito de descer
+			}
+			if (tecla.keyCode == 39) {
+				xIteracao = xIteracao + 70; //aumentar o x tem o efeito de ir para a direita
+			}
+			if (tecla.keyCode == 37) {
+				xIteracao = xIteracao - 70; //diminuir o x tem o efeito de ir para a esquerda
+			}
+		}
+
+		function gameloop() {
+
+			ctx.clearRect(0, 0, 800, 400); //antes de fazer o desenho é preciso limpar o canvas
+
+			meoteoroLoop();
+			iteracaoLoop();
+
+			if (!detectarColisao()) {
+				//chama novamente o ciclo da animação
+				requestAnimationFrame(gameloop);
+			}
+		}
+
+		function adicionarPontos() {
+			pontos = pontos + 10;
+			let element = document.getElementById('pontos');
+			console.log('element', element);
+			element.innerText = pontos;
+		}
+
+		function iteracaoLoop() {
+			desenharIteracao(xIteracao, yIteracao);
+		}
+
+		function meoteoroLoop() {
+			if (yMeteoro <= 400) {
+				desenharMeteoro(xMeteoro, yMeteoro); //enquanto x for menor que 700 ocorre o desenho
+			}
+			else {
+				adicionarPontos();
+				xMeteoro = xIteracao;
+				yMeteoro = 0; //termina o game loop
+			}
+
+			yMeteoro = yMeteoro + 10; //incrementar a variável x indicando o deslocamento para a direita
+		}
+
+		function desenharIteracao(pX, pY) {
+			//ctx.clearRect(0, 0, 800, 400); //antes de fazer o desenho é preciso limpar o canvas
+			ctx.fillStyle = '#000';
+			ctx.fillRect(pX, pY, 50, 50);
+		}
+
+		function desenharMeteoro(pX, pY) {
+			//ctx.clearRect(0, 0, 800, 400); //antes de fazer o desenho é preciso limpar o canvas
+			ctx.fillStyle = '#00F';
+			ctx.fillRect(pX, pY, 30, 30);
+		}
+
+		function getRandomNumeroRange(min, max) {
+			return Math.random() * (max - min) + min;
+		}
+
+		function detectarColisao() {
+			if (((xMeteoro + larguraMeteoro) > xIteracao
+				&& xMeteoro < (xIteracao + larguraIteracao))
+				&& ((yMeteoro + alturaMeteoro) > yIteracao
+					&& yMeteoro < (yIteracao + alturaIteracao))) {
+				alert("GAME OVER !");
+
+				return true;
+			}
+
+			return false;
+		}
+
+	</script>
+</body>
+
+</html>
